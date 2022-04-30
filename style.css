@@ -1,1 +1,60 @@
-/* TO DO: add classes */
+img {
+    height: 40px;
+    width: 40px;
+    margin: auto;
+}
+
+tr td {
+    height: 50px;
+    width: 50px;
+}
+
+table {
+    border-style: solid;
+    border-color: #000000;
+    margin: auto;
+    position: relative;
+}
+
+.light-cell {
+    background: rgb(142, 81, 81);
+    width: 45px;
+    height: 45px;
+    user-select: none;
+}
+
+.dark-cell {
+    background: rgb(106, 106, 106);
+    width: 45px;
+    height: 45px;
+    user-select: none;
+}
+
+.selected {
+    background: blueviolet;
+}
+
+.possible-move {
+    background: green;
+}
+
+.enemy {
+    background: red;
+}
+
+.winner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 50px;
+    border-radius: 10px;
+    width: max-content;
+
+}
+
+h1 {
+    text-align: center;
+    font-family: 'Franklin Gothic Medium';
+}
