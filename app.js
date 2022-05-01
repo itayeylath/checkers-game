@@ -69,13 +69,13 @@ class BoardData {
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
         //TODO: add winner note.
-        
+
         boardData.pieces.splice(boardData.getindex(row, col), 1);
         table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
-        
-        if (this.blackCounter === 12 || this.whiteCounter === 12 ) {
+
+        if (this.blackCounter === 12 || this.whiteCounter === 12) {
             if (this.currentPlayer === WHITE_PLAYER) {
-                //TODO: more simple who the winner!
+                //TODO: more simple who the winner! and func for winner!
                 this.winner = BLACK_PLAYER;
             } else {
                 this.winner = WHITE_PLAYER;
@@ -124,12 +124,32 @@ class BoardData {
                     if (this.getPiece(cellRow, cellCol).player === BLACK_PLAYER) {
                         this.blackCounter++;
                     }
-                    else{
+                    else {
                         this.whiteCounter++;
                     }
                     this.getremove(cellRow, cellCol);
                 }
             }
+        }
+    }
+
+    getPotentialMovment() {
+        let counter = 0;
+        for (let piece of this.pieces) {
+            if (piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
+                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment')
+            }
+             if (piece.getPossibleMoves(boardData).length == 0 && this.currentPlayer !== piece.player) {
+                counter++;
+            }
+
+        }
+        if (counter === 1) {
+            this.winner = this.currentPlayer;
+            const WIneerPop = document.createElement("div");
+            WIneerPop.textContent = "the winner is " + this.winner;
+            WIneerPop.className = 'winner';
+            table.appendChild(WIneerPop);
         }
     }
 }
@@ -261,7 +281,9 @@ function onCellClick(row, col) {
             }
 
         }
+
         ClearBoard();
+
     }
 
     //Print possible moves for selceted piece and Take into account player turns.
@@ -286,20 +308,34 @@ function onCellClick(row, col) {
                 else if (boardData.isEnemy(row, col, CELL_ROW, CELL_COL)) {
                     CELL.classList.add('enemy');
                 }
-
-
             }
         }
 
 
+        // Show selected cell
+        if (boardData.winner === undefined) {
+            selectedCell.classList.add('selected-cell');
+        }
+        boardData.lastPiece = selectedPiece;
+        boardData.lastCell = selectedCell;
+
+        boardData.getPotentialMovment();
+
+        //TODO: ERASE?
+        let bool = true;
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                if (table.rows[i].cells[j].classList[1] === 'possible-move') {
+                    bool = false;
+                }
+            }
+        }
+        if (bool === true) {
+            console.log("NO PLACE TO MOVE!")
+        }
     }
 
-    // Show selected cell
-    if (boardData.winner === undefined) {
-        selectedCell.classList.add('selected-cell');
-    }
-    boardData.lastPiece = selectedPiece;
-    boardData.lastCell = selectedCell;
+
 
 }
 
@@ -307,7 +343,7 @@ function onCellClick(row, col) {
 function ClearBoard() {
     for (let i = 0; i < BOARD_SIZE; i++) {
         for (let j = 0; j < BOARD_SIZE; j++) {
-            table.rows[i].cells[j].classList.remove('possible-move', 'selected-cell', 'enemy');
+            table.rows[i].cells[j].classList.remove('possible-move', 'selected-cell', 'enemy', 'Potential-Movment');
         }
     }
 }
@@ -337,6 +373,7 @@ function initialPieces(row, col, cell, counterPieces) {
         pieces.push(new Piece(row, col, 'pawn', WHITE_PLAYER));
     }
 }
+
 //Create a checkers board 8X8 and 24 pieces.
 function creatCheckersBoard() {
     table = document.createElement('table');
