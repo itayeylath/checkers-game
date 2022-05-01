@@ -14,7 +14,7 @@ class BoardData {
         this.winner = undefined;
         this.lastPiece = undefined;
         this.lastCell = undefined;
-        this.lastCapture = undefined;
+        this.Capture = undefined;
     }
     //Get piece class by row and col.
     getPiece(row, col) {
@@ -23,6 +23,7 @@ class BoardData {
                 return piece;
             }
         }
+
     }
     //Get index of the piece in pieces array.
     getindex(row, col) {
@@ -61,13 +62,15 @@ class BoardData {
         addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
         removeImg(this.lastCell);
         this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+       
     }
 
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
         //TODO: add winner note.
-         boardData.pieces.splice(boardData.getindex(row, col), 1);
-         table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
+        boardData.pieces.splice(boardData.getindex(row, col), 1);
+        table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
+        console.log(boardData)
     }
 
     //Get 'true' if Piece exist.
@@ -80,21 +83,33 @@ class BoardData {
     }
 
     getOpponentPlayer(row, col) {
-        if (this.getPiece(row, col).player == WHITE_PLAYER) {
-            return BLACK_PLAYER;
+        if (this.getPiece(row, col) !== undefined) {
+            if (this.getPiece(row, col).player == WHITE_PLAYER) {
+                return BLACK_PLAYER;
+            }
+            return WHITE_PLAYER;
         }
-        return WHITE_PLAYER;
     }
 
-    isCaptureMove(possibleRow, possibleCol, row, col) {
-        if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8) {
+    isEnemy(possibleRow, possibleCol, row, col) {
+        if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8 && this.getPiece(row, col) !== undefined) {
             if (this.getOpponentPlayer(possibleRow, possibleCol) === this.getPiece(row, col).player) {
+                return true;
             }
-            return true;
         }
         return false;
     }
 
+    getCaptureMove(row, col) {
+        const Options = [[1, 0], [1, -1], [1, 1], [0, -1], [0, 1], [-1, 0], [-1, 1], [-1, -1]];
+        for (let Option of Options) {
+            let cellRow = row + Option[0];
+            let cellCol = col + Option[1];
+            if (table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
+                this.getremove(cellRow, cellCol);
+            }
+        }
+    }
 }
 
 
@@ -127,46 +142,64 @@ class Piece {
         //Black direction (down).
         if (this.player === BLACK_PLAYER) {
 
+            //right empty
             if (boardData.isEmpty(this.row + 1, this.col + 1)) {
                 result.push([this.row + 1, this.col + 1])
             }
-            else if (boardData.isCaptureMove(this.row + 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col + 2)) {
-                result.push([this.row + 1, this.col + 1])
-                result.push([this.row + 2, this.col + 2])
-            }
-
+            //left empty
             if (boardData.isEmpty(this.row + 1, this.col - 1)) {
                 result.push([this.row + 1, this.col - 1])
             }
-            else if (boardData.isCaptureMove(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
+            //capture move right
+            if (boardData.isEnemy(this.row + 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col + 2)) {
+                result = [];
+                result.push([this.row + 1, this.col + 1])
+                result.push([this.row + 2, this.col + 2])
+                //both sides
+                if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
+                    result.push([this.row + 1, this.col - 1])
+                    result.push([this.row + 2, this.col - 2])
+                }
+            }
+            //capture move left
+            else if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
+                result = [];
                 result.push([this.row + 1, this.col - 1])
                 result.push([this.row + 2, this.col - 2])
             }
+            return result;
         }
-        //White direction (up).
-        else {
-            // result.push([this.row - 1, this.col + 1])
-            // result.push([this.row - 1, this.col - 1])
-            // result.push([this.row - 2, this.col + 2])
-            // result.push([this.row - 2, this.col - 2])
 
+        //White direction (up).
+        else if (this.player === WHITE_PLAYER) {
+            result = [];
+            //right empty
             if (boardData.isEmpty(this.row - 1, this.col + 1)) {
                 result.push([this.row - 1, this.col + 1])
             }
-            else if (boardData.isCaptureMove(this.row - 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col + 2)) {
-                result.push([this.row - 1, this.col + 1])
-                result.push([this.row - 2, this.col + 2])
-            }
-
+            //left empty
             if (boardData.isEmpty(this.row - 1, this.col - 1)) {
                 result.push([this.row - 1, this.col - 1])
             }
-            else if (boardData.isCaptureMove(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
+            //capture move right
+            if (boardData.isEnemy(this.row - 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col + 2)) {
+                result = [];
+                result.push([this.row - 1, this.col + 1])
+                result.push([this.row - 2, this.col + 2])
+                //both sides
+                if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
+                    result.push([this.row - 1, this.col - 1])
+                    result.push([this.row - 2, this.col - 2])
+                }
+            }
+            //capture move left
+            else if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
+                result = [];
                 result.push([this.row - 1, this.col - 1])
                 result.push([this.row - 2, this.col - 2])
             }
+            return result;
         }
-        return result;
 
 
     }
@@ -201,11 +234,11 @@ function onCellClick(row, col) {
     if (boardData.lastCell !== undefined) {
         if (selectedCell.classList[1] === 'possible-move') {
             boardData.getMove(row, col);
-            if(document.getElementsByClassName("capture-move")[0] !== undefined){
-              boardData.getremove(boardData.lastCapture.row, boardData.lastCapture.col);
+            if (document.getElementsByClassName("enemy")[0] !== undefined) {
+                boardData.getCaptureMove(row, col);
             }
-        }
 
+        }
         ClearBoard();
     }
 
@@ -224,14 +257,14 @@ function onCellClick(row, col) {
             }
 
             if (CELL !== undefined) {
+
                 if (boardData.getPiece(CELL_ROW, CELL_COL) === undefined) {
                     CELL.classList.add('possible-move');
                 }
-
-                else if (boardData.isCaptureMove(CELL_ROW, CELL_COL, row, col)) {
-                    CELL.classList.add('capture-move');
-                    boardData.lastCapture = boardData.getPiece(CELL_ROW, CELL_COL);
+                else if (boardData.isEnemy(row, col, CELL_ROW, CELL_COL)) {
+                    CELL.classList.add('enemy');
                 }
+
 
             }
         }
@@ -252,7 +285,7 @@ function onCellClick(row, col) {
 function ClearBoard() {
     for (let i = 0; i < BOARD_SIZE; i++) {
         for (let j = 0; j < BOARD_SIZE; j++) {
-            table.rows[i].cells[j].classList.remove('possible-move', 'selected-cell', 'capture-move');
+            table.rows[i].cells[j].classList.remove('possible-move', 'selected-cell', 'enemy');
         }
     }
 }
