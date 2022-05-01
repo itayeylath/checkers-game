@@ -23,16 +23,47 @@ class BoardData {
             }
         }
     }
+    //Get index of the piece in pieces array.
+    getindex(row, col) {
+        let index = -1 ;
+        for (const piece of this.pieces) {
+            index++ ;
+            if (piece.row === row && piece.col === col) {
+                return index;
+            }
+        }
 
-    // get bool if it your turn
+    }
+
+    //Get 'true' if it your turn.
     getTurnMoves(piece) {
         if (this.currentPlayer == piece.player) {
             return true;
         } return false;
     }
 
-}
+    //Update array after movment.
+    updatePiecesArray(pieces, index, row, col, type, player) {
+        pieces[index] = new Piece(row, col, type, player);
 
+        //get the Player for next turn
+        if (this.currentPlayer === BLACK_PLAYER) {
+            this.currentPlayer = WHITE_PLAYER;
+        }
+        else {
+            this.currentPlayer = BLACK_PLAYER;
+        }
+    }
+
+    //Get piece move, add image and update BoardData pieces array.
+    getMove(row, col) {
+        addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
+        removeImg(this.lastCell);
+        this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+
+    }
+
+}
 
 
 class Piece {
@@ -54,11 +85,18 @@ class Piece {
     }
     getPawnMoves(boardData) {
         let result = [];
+        // TO DO: need up ?
         const UP = -1;
 
+        //black dirc
         if (this.player === BLACK_PLAYER) {
             result.push([this.row + 1, this.col + 1])
             result.push([this.row + 1, this.col - 1])
+        }
+        // whit dirc
+        else {
+            result.push([this.row - 1, this.col + 1])
+            result.push([this.row - 1, this.col - 1])
         }
         return result;
 
@@ -74,13 +112,12 @@ class Piece {
 function onCellClick(row, col) {
     const selectedPiece = boardData.getPiece(row, col);
     const selectedCell = table.rows[row].cells[col];
-    console.log(selectedPiece)
+    
     //Check if this is the first move.
     if (boardData.lastCell !== undefined) {
         if (selectedCell.classList[1] === 'possible-move') {
-
+            boardData.getMove(row, col);
         }
-
 
         ClearBoard();
     }
@@ -128,6 +165,12 @@ function addImg(cell, player, name) {
     img.draggable = false;
     cell.appendChild(img);
 }
+
+//Remove image from cell.
+function removeImg(cell){
+    cell.getElementsByTagName("img")[0].remove();
+}
+
 // Create 24 pieces and images for new game.
 function initialPieces(row, col, cell, counterPieces) {
     if (counterPieces < 12) {
