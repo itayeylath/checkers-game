@@ -8,11 +8,32 @@ let boardData;
 let pieces = [];
 
 class BoardData {
-    constructor(pieces) {
+    constructor(pieces, firstPlayer) {
         this.pieces = pieces;
+        this.currentPlayer = firstPlayer;
+        this.winner = undefined;
+        this.lastPiece = undefined;
+        this.lastCell = undefined;
+    }
+    //Get piece class by row and col.
+    getPiece(row, col) {
+        for (const piece of this.pieces) {
+            if (piece.row === row && piece.col === col) {
+                return piece;
+            }
+        }
+    }
+
+    // get bool if it your turn
+    getTurnMoves(piece) {
+        if (this.currentPlayer == piece.player) {
+            return true;
+        } return false;
     }
 
 }
+
+
 
 class Piece {
     constructor(row, col, type, player) {
@@ -21,16 +42,93 @@ class Piece {
         this.type = type;
         this.player = player;
     }
+
+    getPossibleMoves() {
+        let moves = [];
+        if (this.type === 'pawn') {
+            moves = this.getPawnMoves(boardData);
+        }
+        else if (this.type === 'queen') {
+            moves = this.getQueenMoves(boardData);
+        }
+    }
+    getPawnMoves(boardData) {
+        let result = [];
+        const UP = -1;
+
+        if (this.player === BLACK_PLAYER) {
+            result.push([this.row + 1, this.col + 1])
+            result.push([this.row + 1, this.col - 1])
+        }
+        return result;
+
+
+    }
+
+    getQueenMoves(boardData) {
+        // TO DO: queen moves.
+    }
 }
 
-//add image to cell
+//Decoration selected and possible moves, move piece and capture enemy- all by click.
+function onCellClick(row, col) {
+    const selectedPiece = boardData.getPiece(row, col);
+    const selectedCell = table.rows[row].cells[col];
+    console.log(selectedPiece)
+    //Check if this is the first move.
+    if (boardData.lastCell !== undefined) {
+        if (selectedCell.classList[1] === 'possible-move') {
+
+        }
+
+
+        ClearBoard();
+    }
+
+    //print possible moves for selceted piece
+    // TO DO: put it in the if -  && boardData.getTurnMoves(selectedPiece)
+    if (selectedPiece !== undefined && boardData.winner === undefined) {
+
+        let possibleMoves = selectedPiece.getPawnMoves();
+        for (let possibleMove of possibleMoves) {
+            const CELL_ROW = possibleMove[0];
+            const CELL_COL = possibleMove[1];
+            const CELL = table.rows[CELL_ROW].cells[CELL_COL];
+
+            if (boardData.getPiece(CELL_ROW, CELL_COL) === undefined && CELL !== undefined) {
+                CELL.classList.add('possible-move');
+            }
+        }
+
+
+    }
+
+    // Show selected cell
+    if (boardData.winner === undefined) {
+        selectedCell.classList.add('selected-cell');
+    }
+    boardData.lastPiece = selectedPiece;
+    boardData.lastCell = selectedCell;
+
+}
+
+//Clear board from all Decoration.
+function ClearBoard() {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        for (let j = 0; j < BOARD_SIZE; j++) {
+            table.rows[i].cells[j].classList.remove('possible-move', 'selected-cell', 'capture-move');
+        }
+    }
+}
+
+//Add image to cell.
 function addImg(cell, player, name) {
     const img = document.createElement("img")
     img.src = 'images/' + player + '/' + name + '.png';
     img.draggable = false;
     cell.appendChild(img);
 }
-// Create 24 Pieces and images for new game
+// Create 24 pieces and images for new game.
 function initialPieces(row, col, cell, counterPieces) {
     if (counterPieces < 12) {
         addImg(cell, BLACK_PLAYER, 'pawn');
@@ -41,7 +139,7 @@ function initialPieces(row, col, cell, counterPieces) {
         pieces.push(new Piece(row, col, 'pawn', WHITE_PLAYER));
     }
 }
-//create a checkers board 8X8 and 24 Pieces.
+//Create a checkers board 8X8 and 24 pieces.
 function creatCheckersBoard() {
     table = document.createElement('table');
     document.body.appendChild(table);
@@ -57,18 +155,15 @@ function creatCheckersBoard() {
                 initialPieces(row, col, cell, counterPieces);
                 counterPieces++;
 
-            } 
+            } // every click on cell 'onCellClick' func will start.
+            cell.addEventListener('click', () => onCellClick(row, col));
         }
     }
 }
 
-
-
-
-
-function initialgame() {
+function getInitialgame() {
     creatCheckersBoard();
-    boardData = new BoardData(pieces);
+    boardData = new BoardData(pieces, BLACK_PLAYER);
 }
-
-window.addEventListener('load', initialgame);
+//By loaded the page the initial game will start.
+window.addEventListener('load', getInitialgame);

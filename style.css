@@ -30,7 +30,7 @@ table {
     user-select: none;
 }
 
-.selected {
+.selected-cell{
     background: blueviolet;
 }
 
@@ -38,7 +38,7 @@ table {
     background: green;
 }
 
-.enemy {
+.capture-move {
     background: red;
 }
 
