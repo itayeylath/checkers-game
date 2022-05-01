@@ -14,6 +14,7 @@ class BoardData {
         this.winner = undefined;
         this.lastPiece = undefined;
         this.lastCell = undefined;
+        this.lastCapture = undefined;
     }
     //Get piece class by row and col.
     getPiece(row, col) {
@@ -25,9 +26,9 @@ class BoardData {
     }
     //Get index of the piece in pieces array.
     getindex(row, col) {
-        let index = -1 ;
+        let index = -1;
         for (const piece of this.pieces) {
-            index++ ;
+            index++;
             if (piece.row === row && piece.col === col) {
                 return index;
             }
@@ -60,7 +61,38 @@ class BoardData {
         addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
         removeImg(this.lastCell);
         this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+    }
 
+    //Get capture piece remove, remove image and update BoardData pieces array.
+    getremove(row, col) {
+        //TODO: add winner note.
+         boardData.pieces.splice(boardData.getindex(row, col), 1);
+         table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
+    }
+
+    //Get 'true' if Piece exist.
+    isEmpty(row, col) {
+        if (this.getPiece(row, col) === undefined && row < 8 && row > -1 && col > -1 && col < 8) {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    getOpponentPlayer(row, col) {
+        if (this.getPiece(row, col).player == WHITE_PLAYER) {
+            return BLACK_PLAYER;
+        }
+        return WHITE_PLAYER;
+    }
+
+    isCaptureMove(possibleRow, possibleCol, row, col) {
+        if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8) {
+            if (this.getOpponentPlayer(possibleRow, possibleCol) === this.getPiece(row, col).player) {
+            }
+            return true;
+        }
+        return false;
     }
 
 }
@@ -74,7 +106,7 @@ class Piece {
         this.player = player;
     }
 
-    getPossibleMoves() {
+    getPossibleMoves(boardData) {
         let moves = [];
         if (this.type === 'pawn') {
             moves = this.getPawnMoves(boardData);
@@ -82,21 +114,57 @@ class Piece {
         else if (this.type === 'queen') {
             moves = this.getQueenMoves(boardData);
         }
+
+        return moves;
     }
     getPawnMoves(boardData) {
         let result = [];
+        let opositions = [];
+        let counter = 0;
         // TO DO: need up ?
         const UP = -1;
 
-        //black dirc
+        //Black direction (down).
         if (this.player === BLACK_PLAYER) {
-            result.push([this.row + 1, this.col + 1])
-            result.push([this.row + 1, this.col - 1])
+
+            if (boardData.isEmpty(this.row + 1, this.col + 1)) {
+                result.push([this.row + 1, this.col + 1])
+            }
+            else if (boardData.isCaptureMove(this.row + 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col + 2)) {
+                result.push([this.row + 1, this.col + 1])
+                result.push([this.row + 2, this.col + 2])
+            }
+
+            if (boardData.isEmpty(this.row + 1, this.col - 1)) {
+                result.push([this.row + 1, this.col - 1])
+            }
+            else if (boardData.isCaptureMove(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
+                result.push([this.row + 1, this.col - 1])
+                result.push([this.row + 2, this.col - 2])
+            }
         }
-        // whit dirc
+        //White direction (up).
         else {
-            result.push([this.row - 1, this.col + 1])
-            result.push([this.row - 1, this.col - 1])
+            // result.push([this.row - 1, this.col + 1])
+            // result.push([this.row - 1, this.col - 1])
+            // result.push([this.row - 2, this.col + 2])
+            // result.push([this.row - 2, this.col - 2])
+
+            if (boardData.isEmpty(this.row - 1, this.col + 1)) {
+                result.push([this.row - 1, this.col + 1])
+            }
+            else if (boardData.isCaptureMove(this.row - 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col + 2)) {
+                result.push([this.row - 1, this.col + 1])
+                result.push([this.row - 2, this.col + 2])
+            }
+
+            if (boardData.isEmpty(this.row - 1, this.col - 1)) {
+                result.push([this.row - 1, this.col - 1])
+            }
+            else if (boardData.isCaptureMove(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
+                result.push([this.row - 1, this.col - 1])
+                result.push([this.row - 2, this.col - 2])
+            }
         }
         return result;
 
@@ -106,17 +174,36 @@ class Piece {
     getQueenMoves(boardData) {
         // TO DO: queen moves.
     }
+
+    //stop possible moves after other player
+    getMovesInDirection(directionRow, directionCol, boardData) {
+        let result = [];
+        for (let i = 1; i < BOARD_SIZE; i++) {
+            let row = this.row + directionRow * i;
+            let col = this.col + directionCol * i;
+
+            if (boardData.getPiece(row, col) === undefined) {
+                result.push([row, col]);
+            } else {
+                result.push([row, col]);
+                return result;
+            }
+        } return result;
+    }
 }
 
 //Decoration selected and possible moves, move piece and capture enemy- all by click.
 function onCellClick(row, col) {
     const selectedPiece = boardData.getPiece(row, col);
     const selectedCell = table.rows[row].cells[col];
-    
+
     //Check if this is the first move.
     if (boardData.lastCell !== undefined) {
         if (selectedCell.classList[1] === 'possible-move') {
             boardData.getMove(row, col);
+            if(document.getElementsByClassName("capture-move")[0] !== undefined){
+              boardData.getremove(boardData.lastCapture.row, boardData.lastCapture.col);
+            }
         }
 
         ClearBoard();
@@ -126,14 +213,26 @@ function onCellClick(row, col) {
     // TO DO: put it in the if -  && boardData.getTurnMoves(selectedPiece)
     if (selectedPiece !== undefined && boardData.winner === undefined) {
 
-        let possibleMoves = selectedPiece.getPawnMoves();
+        let possibleMoves = selectedPiece.getPossibleMoves(boardData);
         for (let possibleMove of possibleMoves) {
             const CELL_ROW = possibleMove[0];
             const CELL_COL = possibleMove[1];
-            const CELL = table.rows[CELL_ROW].cells[CELL_COL];
+            //TODO: chenge capitlal letter to cell.
+            let CELL = undefined;
+            if (CELL_ROW !== undefined && CELL_COL !== undefined) {
+                CELL = table.rows[CELL_ROW].cells[CELL_COL];
+            }
 
-            if (boardData.getPiece(CELL_ROW, CELL_COL) === undefined && CELL !== undefined) {
-                CELL.classList.add('possible-move');
+            if (CELL !== undefined) {
+                if (boardData.getPiece(CELL_ROW, CELL_COL) === undefined) {
+                    CELL.classList.add('possible-move');
+                }
+
+                else if (boardData.isCaptureMove(CELL_ROW, CELL_COL, row, col)) {
+                    CELL.classList.add('capture-move');
+                    boardData.lastCapture = boardData.getPiece(CELL_ROW, CELL_COL);
+                }
+
             }
         }
 
@@ -167,7 +266,7 @@ function addImg(cell, player, name) {
 }
 
 //Remove image from cell.
-function removeImg(cell){
+function removeImg(cell) {
     cell.getElementsByTagName("img")[0].remove();
 }
 
@@ -206,7 +305,11 @@ function creatCheckersBoard() {
 
 function getInitialgame() {
     creatCheckersBoard();
+    //TODO: chenge to white player
     boardData = new BoardData(pieces, BLACK_PLAYER);
 }
+
+
 //By loaded the page the initial game will start.
 window.addEventListener('load', getInitialgame);
+
