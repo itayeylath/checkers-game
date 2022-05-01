@@ -14,7 +14,8 @@ class BoardData {
         this.winner = undefined;
         this.lastPiece = undefined;
         this.lastCell = undefined;
-
+        this.whiteCounter = 0;
+        this.blackCounter = 0;
     }
     //Get piece class by row and col.
     getPiece(row, col) {
@@ -62,15 +63,28 @@ class BoardData {
         addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
         removeImg(this.lastCell);
         this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
-       
+
     }
 
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
         //TODO: add winner note.
+        
         boardData.pieces.splice(boardData.getindex(row, col), 1);
         table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
-        console.log(boardData)
+        
+        if (this.blackCounter === 12 || this.whiteCounter === 12 ) {
+            if (this.currentPlayer === WHITE_PLAYER) {
+                //TODO: more simple who the winner!
+                this.winner = BLACK_PLAYER;
+            } else {
+                this.winner = WHITE_PLAYER;
+            }
+            const WIneerPop = document.createElement("div");
+            WIneerPop.textContent = "the winner is " + this.winner;
+            WIneerPop.className = 'winner';
+            table.appendChild(WIneerPop);
+        }
     }
 
     //Get 'true' if Piece exist.
@@ -105,8 +119,14 @@ class BoardData {
         for (let Option of Options) {
             let cellRow = row + Option[0];
             let cellCol = col + Option[1];
-            if(cellRow < 8 && cellRow > -1 && cellCol > -1 && cellCol < 8){
-                if ( table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
+            if (cellRow < 8 && cellRow > -1 && cellCol > -1 && cellCol < 8) {
+                if (table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
+                    if (this.getPiece(cellRow, cellCol).player === BLACK_PLAYER) {
+                        this.blackCounter++;
+                    }
+                    else{
+                        this.whiteCounter++;
+                    }
                     this.getremove(cellRow, cellCol);
                 }
             }
@@ -245,7 +265,7 @@ function onCellClick(row, col) {
     }
 
     //Print possible moves for selceted piece and Take into account player turns.
-    
+
     if (selectedPiece !== undefined && boardData.winner === undefined && boardData.getTurnMoves(selectedPiece)) {
 
         let possibleMoves = selectedPiece.getPossibleMoves(boardData);
@@ -307,6 +327,7 @@ function removeImg(cell) {
 
 // Create 24 pieces and images for new game.
 function initialPieces(row, col, cell, counterPieces) {
+    
     if (counterPieces < 12) {
         addImg(cell, BLACK_PLAYER, 'pawn');
         pieces.push(new Piece(row, col, 'pawn', BLACK_PLAYER));
