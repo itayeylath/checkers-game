@@ -14,7 +14,7 @@ class BoardData {
         this.winner = undefined;
         this.lastPiece = undefined;
         this.lastCell = undefined;
-        this.Capture = undefined;
+
     }
     //Get piece class by row and col.
     getPiece(row, col) {
@@ -244,9 +244,9 @@ function onCellClick(row, col) {
         ClearBoard();
     }
 
-    //print possible moves for selceted piece
-    // TO DO: put it in the if -  && boardData.getTurnMoves(selectedPiece)
-    if (selectedPiece !== undefined && boardData.winner === undefined) {
+    //Print possible moves for selceted piece and Take into account player turns.
+    
+    if (selectedPiece !== undefined && boardData.winner === undefined && boardData.getTurnMoves(selectedPiece)) {
 
         let possibleMoves = selectedPiece.getPossibleMoves(boardData);
         for (let possibleMove of possibleMoves) {
@@ -341,7 +341,7 @@ function creatCheckersBoard() {
 function getInitialgame() {
     creatCheckersBoard();
     //TODO: chenge to white player
-    boardData = new BoardData(pieces, BLACK_PLAYER);
+    boardData = new BoardData(pieces, WHITE_PLAYER);
 }
 
 
