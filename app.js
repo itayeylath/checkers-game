@@ -105,8 +105,10 @@ class BoardData {
         for (let Option of Options) {
             let cellRow = row + Option[0];
             let cellCol = col + Option[1];
-            if (table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
-                this.getremove(cellRow, cellCol);
+            if(cellRow < 8 && cellRow > -1 && cellCol > -1 && cellCol < 8){
+                if ( table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
+                    this.getremove(cellRow, cellCol);
+                }
             }
         }
     }
