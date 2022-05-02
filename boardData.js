@@ -1,3 +1,4 @@
+//Information on the board, the brain of the game.
 class BoardData {
     constructor(pieces, firstPlayer) {
         this.pieces = pieces;
@@ -26,14 +27,12 @@ class BoardData {
             }
         }
     }
-
     //Get 'true' if it your turn.
     getTurnMoves(piece) {
         if (this.currentPlayer == piece.player) {
             return true;
         } return false;
     }
-
     //Update array after movment.
     updatePiecesArray(pieces, index, row, col, type, player) {
         pieces[index] = new Piece(row, col, type, player);
@@ -46,36 +45,26 @@ class BoardData {
             this.currentPlayer = BLACK_PLAYER;
         }
     }
-
     //Get piece move, add image and update BoardData pieces array.
     getMove(row, col) {
         addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
         removeImg(this.lastCell);
         this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
-
     }
-
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
-        //TODO: add winner note.
-
         boardData.pieces.splice(boardData.getindex(row, col), 1);
         table.rows[row].cells[col].getElementsByTagName("img")[0].remove();
-
+        //check if all pieces captured.
         if (this.blackCounter === 12 || this.whiteCounter === 12) {
             if (this.currentPlayer === WHITE_PLAYER) {
-                //TODO: more simple who the winner! and func for winner!
                 this.winner = BLACK_PLAYER;
             } else {
                 this.winner = WHITE_PLAYER;
             }
-            const WIneerPop = document.createElement("div");
-            WIneerPop.textContent = "the winner by eat ALL pieces is " + this.winner;
-            WIneerPop.className = 'winner';
-            table.appendChild(WIneerPop);
+            getNotifyWinner();
         }
     }
-
     //Get 'true' if Piece exist.
     isEmpty(row, col) {
         if (this.getPiece(row, col) === undefined && row < 8 && row > -1 && col > -1 && col < 8) {
@@ -84,7 +73,7 @@ class BoardData {
         else
             return false;
     }
-
+    //Get the the opponent player for the specific piece.
     getOpponentPlayer(row, col) {
         if (this.getPiece(row, col) !== undefined) {
             if (this.getPiece(row, col).player == WHITE_PLAYER) {
@@ -93,16 +82,15 @@ class BoardData {
             return WHITE_PLAYER;
         }
     }
-
+    //Get 'true' if the piece is enemy.
     isEnemy(possibleRow, possibleCol, row, col) {
         if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8 && this.getPiece(row, col) !== undefined) {
             if (this.getOpponentPlayer(possibleRow, possibleCol) === this.getPiece(row, col).player) {
                 return true;
             }
-        }
-        return false;
+        } return false;
     }
-
+    //Get capture move.
     getCaptureMove(row, col) {
         const Options = [[1, 0], [1, -1], [1, 1], [0, -1], [0, 1], [-1, 0], [-1, 1], [-1, -1]];
         for (let Option of Options) {
@@ -121,33 +109,12 @@ class BoardData {
             }
         }
     }
-
+    //Show the potinatial players who can move foe the current player.
     getPotentialMovment() {
-        let counter = 0;
         for (let piece of this.pieces) {
-
-            // for (let move of piece.getPossibleMoves(boardData)) {
-            //     let cellRow = move[0];
-            //     let cellCol = move[1];
-            //     if (table.rows[cellRow].cells[cellCol].classList[1] === 'enemy') {
-            //          table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
-            //     }
-            // }
-
             if (piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
                 table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
             }
-            else if (piece.getPossibleMoves(boardData).length == 0 && this.currentPlayer !== piece.player) {
-                counter++;
-            }
-
-        }
-        if (counter === 1) {
-            this.winner = this.currentPlayer;
-            const WIneerPop = document.createElement("div");
-            WIneerPop.textContent = "the winner by NO movment is " + this.winner;
-            WIneerPop.className = 'winner';
-            table.appendChild(WIneerPop);
         }
     }
 }
