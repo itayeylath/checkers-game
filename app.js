@@ -6,8 +6,10 @@ const BLACK_PLAYER = 'black';
 //no-Constant variables
 let boardData;
 let pieces = [];
+let mustMakeJump = false;
+
 //Notify the winner when the game end.
- function getNotifyWinner() {
+function getNotifyWinner() {
     const WIneerPop = document.createElement("div");
     WIneerPop.textContent = "the winner is " + boardData.winner;
     WIneerPop.className = 'winner';
@@ -37,33 +39,21 @@ function onCellClick(row, col) {
             if (document.getElementsByClassName("enemy")[0] !== undefined) {
                 boardData.getCaptureMove(row, col);
             }
-        } 
+        }
         ClearBoard();
         boardData.getPotentialMovment();
     }
-    //Show the possible moves for selceted piece and Take into account player turns.
+    //Show the possible moves for selceted piece and Take into account player turns and capture move.
     if (selectedPiece !== undefined && boardData.winner === undefined && boardData.getTurnMoves(selectedPiece)) {
-        let possibleMoves = selectedPiece.getPossibleMoves(boardData);
-        for (let possibleMove of possibleMoves) {
-            const cellRow = possibleMove[0];
-            const cellCol = possibleMove[1];
-            let cell = undefined;
-            if (cellRow !== undefined && cellCol !== undefined) {
-                cell = table.rows[cellRow].cells[cellCol];
-            }
-            if (cell !== undefined) {
-                if (boardData.isEnemy(row, col, cellRow, cellCol)) {
-                    cell.classList.add('enemy');
-                }
-                else if (boardData.getPiece(cellRow, cellCol) === undefined) {
-                    cell.classList.add('possible-move');
-                }
-            }
+        const possibleMoves = selectedPiece.getPossibleMoves(boardData);
+        if (mustMakeJump === false) {
+            boardData.getOnlyJumpAvaialble();
+        }
+        else if (selectedPiece.canMove === true) {
+            printPossibleMoves(possibleMoves, row, col)
         }
         //Show selected cell.
-        if (boardData.winner === undefined) {
-            seleceteCell.classList.add('selected-cell');
-        }
+        seleceteCell.classList.add('selected-cell');
         boardData.lastPiece = selectedPiece;
         boardData.lastCell = seleceteCell;
     }
@@ -119,8 +109,27 @@ function getInitialgame() {
 //By loaded the page the initial game will start.
 window.addEventListener('load', getInitialgame);
 
+//TODO: write what the func do and put it in the right place
+function printPossibleMoves(possibleMoves, row, col) {
 
 
+    for (let possibleMove of possibleMoves) {
+        const cellRow = possibleMove[0];
+        const cellCol = possibleMove[1];
+        let cell = undefined;
+        if (cellRow !== undefined && cellCol !== undefined) {
+            cell = table.rows[cellRow].cells[cellCol];
+        }
+        if (cell !== undefined) {
+            if (boardData.isEnemy(row, col, cellRow, cellCol)) {
+                cell.classList.add('enemy');
+            }
+            else if (boardData.getPiece(cellRow, cellCol) === undefined) {
+                cell.classList.add('possible-move');
+            }
+        }
+    }
+}
 
 
 

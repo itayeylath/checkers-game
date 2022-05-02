@@ -5,6 +5,8 @@ class Piece {
         this.col = col;
         this.type = type;
         this.player = player;
+        this.canMove = true;
+        this.canCapture = false;
     }
     // Get moves for the specific piece in posintion.
     getPossibleMoves(boardData) {
@@ -39,11 +41,15 @@ class Piece {
                     result.push([this.row + 1, this.col - 1]);
                     result.push([this.row + 2, this.col - 2]);
                 }
+                this.canCapture = true;
+                boardData.getOnlyJumpAvaialble(this.player)
             }   //capture move left
             else if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
                 result = [];
                 result.push([this.row + 1, this.col - 1]);
                 result.push([this.row + 2, this.col - 2]);
+                this.canCapture = true;
+                boardData.getOnlyJumpAvaialble(this.player)
             } return result;
         }
         //White direction (up).
@@ -64,11 +70,15 @@ class Piece {
                     result.push([this.row - 1, this.col - 1]);
                     result.push([this.row - 2, this.col - 2]);
                 }
+                this.canCapture = true;
+                boardData.getOnlyJumpAvaialble(this.player)
             }   //capture move left
             else if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
                 result = [];
                 result.push([this.row - 1, this.col - 1]);
                 result.push([this.row - 2, this.col - 2]);
+                this.canCapture = true;
+                boardData.getOnlyJumpAvaialble(this.player)
             } return result;
         }
     }

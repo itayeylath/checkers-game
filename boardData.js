@@ -8,6 +8,7 @@ class BoardData {
         this.lastCell = undefined;
         this.whiteCounter = 0;
         this.blackCounter = 0;
+
     }
     //Get piece class by row and col.
     getPiece(row, col) {
@@ -65,7 +66,7 @@ class BoardData {
             getNotifyWinner();
         }
     }
-    //Get 'true' if Piece exist.
+    //Get 'true' if Piece is not exist.
     isEmpty(row, col) {
         if (this.getPiece(row, col) === undefined && row < 8 && row > -1 && col > -1 && col < 8) {
             return true;
@@ -105,15 +106,35 @@ class BoardData {
                         this.whiteCounter++;
                     }
                     this.getremove(cellRow, cellCol);
+                    this.capturHappen();
                 }
             }
         }
     }
+
     //Show the potinatial players who can move foe the current player.
     getPotentialMovment() {
         for (let piece of this.pieces) {
-            if (piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
+            if (piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player && piece.canMove === true) {
                 table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
+            }
+        }
+    }
+    // Get game back to rgular, any jump available.
+    capturHappen() {
+        mustMakeJump = false;
+        const currentPieces = boardData.pieces;
+        for (let piece of currentPieces) {
+            piece.canMove = true;
+        }
+    }
+    // get game to only capture available.
+    getOnlyJumpAvaialble(player) {
+        mustMakeJump = true;
+        const currentPieces = boardData.pieces;
+        for (let piece of currentPieces) {
+            if (piece.player === player && piece.canCapture === false) {
+                piece.canMove = false;
             }
         }
     }
