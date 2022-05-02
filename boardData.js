@@ -51,6 +51,7 @@ class BoardData {
         addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
         removeImg(this.lastCell);
         this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+        this.isNoMovement();
     }
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
@@ -111,7 +112,6 @@ class BoardData {
             }
         }
     }
-
     //Show the potinatial players who can move foe the current player.
     getPotentialMovment() {
         for (let piece of this.pieces) {
@@ -136,6 +136,38 @@ class BoardData {
             if (piece.player === player && piece.canCapture === false) {
                 piece.canMove = false;
             }
+        }
+    }
+    //Get length of pieces from the same player.
+    amountOfPiecePlayer(player) {
+        let counter = 0;
+        const currentPieces = boardData.pieces;
+        for (let piece of currentPieces) {
+            if (piece.player === player) {
+                counter++
+            }
+        } return counter;
+    }
+    //Notify winner if the player cannot make another move.
+    isNoMovement() {
+        let counterB = 0;
+        let counterW = 0;
+        const currentPieces = boardData.pieces;
+        for (let piece of currentPieces) {
+            if (piece.getPossibleMoves(boardData).length === 0 && piece.player === BLACK_PLAYER) {
+                counterB++
+            }
+            if (piece.getPossibleMoves(boardData).length === 0 && piece.player === WHITE_PLAYER) {
+                counterW++
+            }
+        }
+        if (counterB === this.amountOfPiecePlayer(BLACK_PLAYER)) {
+            this.winner = WHITE_PLAYER;
+            getNotifyWinner();
+        }
+        else if (counterW === this.amountOfPiecePlayer(WHITE_PLAYER)) {
+            this.winner = BLACK_PLAYER;
+            getNotifyWinner();
         }
     }
 }
