@@ -9,8 +9,8 @@ table {
     position: relative;
 }
 tr td {
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
 }
 .light-cell {
     background: rgb(142, 81, 81);
@@ -25,9 +25,9 @@ tr td {
     user-select: none;
 }
 img {
-    height: 40px;
-    width: 40px;
-    margin: auto;
+    height: 30px;
+    width: 30px;
+    margin: 5px;
 }
 /* 5 classes for decoration the potential movement */
 .selected-cell{

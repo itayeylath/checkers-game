@@ -10,16 +10,16 @@ class Piece {
     // Get moves for the specific piece in posintion.
     getPossibleMoves(boardData) {
         let moves = [];
-        if (this.type === 'pawn') {
-            moves = this.getPawnMoves(boardData);
+        if (this.type === MAN) {
+            moves = this.getManMoves(boardData);
         }
-        else if (this.type === 'queen') {
+        else if (this.type === KING) {
             moves = this.getQueenMoves(boardData);
         }
         return moves;
     }
     //Get regular piece moves.
-    getPawnMoves(boardData) {
+    getManMoves(boardData) {
         let result = [];
 
         //Black direction (down).

@@ -2,6 +2,8 @@
 const BOARD_SIZE = 8;
 const WHITE_PLAYER = 'white';
 const BLACK_PLAYER = 'black';
+const MAN = 'man'
+const KING = 'king'
 
 //no-Constant variables.
 let boardData;
@@ -93,12 +95,12 @@ function addImg(cell, player, name) {
 function initialPieces(row, col, cell, counterPieces) {
     //12 black pieces.
     if (counterPieces < 12) {
-        addImg(cell, BLACK_PLAYER, 'pawn');
-        pieces.push(new Piece(row, col, 'pawn', BLACK_PLAYER));
+        addImg(cell, BLACK_PLAYER, MAN);
+        pieces.push(new Piece(row, col, MAN, BLACK_PLAYER));
     } //12 white pieces.
     else if (counterPieces > 19) {
-        addImg(cell, WHITE_PLAYER, 'pawn');
-        pieces.push(new Piece(row, col, 'pawn', WHITE_PLAYER));
+        addImg(cell, WHITE_PLAYER, MAN);
+        pieces.push(new Piece(row, col, MAN, WHITE_PLAYER));
     }
 }
 //Create a checkers board 8X8 and 24 pieces.
