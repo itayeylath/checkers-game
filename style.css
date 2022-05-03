@@ -1,3 +1,7 @@
+body {
+    background-color: rgb(70, 81, 81);
+}
+
 h1,
 h2 {
     text-align: center;
@@ -6,51 +10,47 @@ h2 {
 
 table {
     border-style: solid;
-    border-color: #000000;
+    border-color: black;
     margin: auto;
     position: relative;
 }
 
-tr td {
-    height: 60px;
-    width: 60px;
-}
-
 .light-cell {
-    background: rgb(142, 81, 81);
+    background: rgb(254, 196, 147);
     width: 45px;
     height: 45px;
     user-select: none;
 }
 
-.red-cell {
-    background: rgb(106, 106, 106);
+.dark-cell {
+    background: rgb(145, 89, 58);
     width: 45px;
     height: 45px;
     user-select: none;
 }
 
 img {
+    display: block;
     height: 30px;
     width: 30px;
-    margin: 5px;
+    margin: auto;
 }
 
 /* 5 classes for decoration the potential movement */
+.Potential-Movment {
+    opacity: 0.6;
+}
+
 .selected-cell {
-    background: blueviolet;
+    background: rgb(91, 55, 36);
 }
 
 .possible-move {
-    background: green;
+    background: rgb(44, 125, 44);
 }
 
 .enemy {
-    background: red;
-}
-
-.Potential-Movment {
-    opacity: 0.8;
+    background: rgb(20, 252, 20);
 }
 
 .winner {
@@ -58,9 +58,9 @@ img {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: rgb(135, 159, 159);
     padding: 50px;
     border-radius: 10px;
     width: max-content;
-
+    font-family: 'Franklin Gothic Medium';
 }

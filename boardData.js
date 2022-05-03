@@ -1,4 +1,4 @@
-//Information on the board, the brain of the game.
+//Information on the board, the 'brain' of the game.
 class BoardData {
     constructor(pieces, firstPlayer) {
         this.pieces = pieces;
@@ -10,12 +10,54 @@ class BoardData {
         this.blackCounter = 0;
 
     }
+    //Show the potinatial players who can move for the current player.
+    getPotentialMovment() {
+        for (let piece of this.pieces) {
+            if (mustMakeJump === true && piece.canCapture === true && this.currentPlayer === piece.player) {
+                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
+            }
+            else if (mustMakeJump === false && piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
+                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
+            }
+        }
+    }
     //Get piece class by row and col.
     getPiece(row, col) {
         for (const piece of this.pieces) {
             if (piece.row === row && piece.col === col) {
                 return piece;
             }
+        }
+    }
+    //Get piece move, add image and update BoardData pieces array and chenge it to 'king'.
+    getMove(row, col) {
+        if (this.lastPiece.player === BLACK_PLAYER && row === 7) {
+            this.getKing(row, col, this.lastPiece.player);
+        }
+        else if (this.lastPiece.player === WHITE_PLAYER && row === 0) {
+            this.getKing(row, col, this.lastPiece.player);
+        }
+        else {
+            addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
+            removeImg(this.lastCell);
+            this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+        }
+        this.isNoMovement();
+    }
+    //Get 'man' piece and make it to 'king'.
+    getKing(row, col, player) {
+        addImg(table.rows[row].cells[col], player, KING);
+        removeImg(table.rows[this.lastPiece.row].cells[this.lastPiece.col]);
+        this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, KING, player);
+    }
+    //Update array after movment.
+    updatePiecesArray(pieces, index, row, col, type, player) {
+        pieces[index] = new Piece(row, col, type, player);
+        //get the Player for next turn
+        if (this.currentPlayer === BLACK_PLAYER) {
+            this.currentPlayer = WHITE_PLAYER;
+        } else {
+            this.currentPlayer = BLACK_PLAYER;
         }
     }
     //Get index of the piece in pieces array.
@@ -28,38 +70,45 @@ class BoardData {
             }
         }
     }
+    //Notify winner if the player cannot make another move.
+    isNoMovement() {
+        let counterB = 0;
+        let counterW = 0;
+        for (let piece of boardData.pieces) {
+            if (piece.getPossibleMoves(boardData).length === 0 && piece.player === BLACK_PLAYER) {
+                counterB++
+            } else if (piece.getPossibleMoves(boardData).length === 0 && piece.player === WHITE_PLAYER) {
+                counterW++
+            }
+        } if (counterB === this.amountOfPiecePlayer(BLACK_PLAYER)) {
+            this.winner = WHITE_PLAYER;
+            getNotifyWinner();
+        } else if (counterW === this.amountOfPiecePlayer(WHITE_PLAYER)) {
+            this.winner = BLACK_PLAYER;
+            getNotifyWinner();
+        }
+    }
+    //Get 'true' if Piece is not exist.
+    isEmpty(row, col) {
+        if (this.getPiece(row, col) === undefined && row < 8 && row > -1 && col > -1 && col < 8) {
+            return true;
+        }
+        else
+            return false;
+    }
+    //Get 'true' if the piece is enemy.
+    isEnemy(possibleRow, possibleCol, row, col) {
+        if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8 && this.getPiece(row, col) !== undefined) {
+            if (this.getOpponentPlayer(possibleRow, possibleCol) === this.getPiece(row, col).player) {
+                return true;
+            }
+        } return false;
+    }
     //Get 'true' if it your turn.
     getTurnMoves(piece) {
         if (this.currentPlayer == piece.player) {
             return true;
         } return false;
-    }
-    //Update array after movment.
-    updatePiecesArray(pieces, index, row, col, type, player) {
-        pieces[index] = new Piece(row, col, type, player);
-
-        //get the Player for next turn
-        if (this.currentPlayer === BLACK_PLAYER) {
-            this.currentPlayer = WHITE_PLAYER;
-        }
-        else {
-            this.currentPlayer = BLACK_PLAYER;
-        }
-    }
-    //Get piece move, add image and update BoardData pieces array.
-    getMove(row, col) {
-        if (this.lastPiece.player === BLACK_PLAYER && row === 7) {
-            this.getKing(row, col, this.lastPiece.player);
-        }
-        else if(this.lastPiece.player === WHITE_PLAYER && row === 0){
-            this.getKing(row, col, this.lastPiece.player);
-        }
-        else {
-            addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
-            removeImg(this.lastCell);
-            this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
-        }
-        this.isNoMovement();
     }
     //Get capture piece remove, remove image and update BoardData pieces array.
     getremove(row, col) {
@@ -75,14 +124,6 @@ class BoardData {
             getNotifyWinner();
         }
     }
-    //Get 'true' if Piece is not exist.
-    isEmpty(row, col) {
-        if (this.getPiece(row, col) === undefined && row < 8 && row > -1 && col > -1 && col < 8) {
-            return true;
-        }
-        else
-            return false;
-    }
     //Get the the opponent player for the specific piece.
     getOpponentPlayer(row, col) {
         if (this.getPiece(row, col) !== undefined) {
@@ -91,14 +132,6 @@ class BoardData {
             }
             return WHITE_PLAYER;
         }
-    }
-    //Get 'true' if the piece is enemy.
-    isEnemy(possibleRow, possibleCol, row, col) {
-        if (possibleRow < 8 && possibleRow > -1 && possibleCol > -1 && possibleCol < 8 && this.getPiece(row, col) !== undefined) {
-            if (this.getOpponentPlayer(possibleRow, possibleCol) === this.getPiece(row, col).player) {
-                return true;
-            }
-        } return false;
     }
     //Get capture move.
     getCaptureMove(row, col) {
@@ -120,17 +153,6 @@ class BoardData {
             }
         }
     }
-    //Show the potinatial players who can move foe the current player.
-    getPotentialMovment() {
-        for (let piece of this.pieces) {
-            if (mustMakeJump === true && piece.canCapture === true && this.currentPlayer === piece.player) {
-                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
-            }
-            else if (mustMakeJump === false && piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
-                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
-            }
-        }
-    }
     // Get game back to rgular, any jump available.
     capturHappen() {
         mustMakeJump = false;
@@ -149,34 +171,6 @@ class BoardData {
                 counter++
             }
         } return counter;
-    }
-    //Notify winner if the player cannot make another move.
-    isNoMovement() {
-        let counterB = 0;
-        let counterW = 0;
-        for (let piece of boardData.pieces) {
-            if (piece.getPossibleMoves(boardData).length === 0 && piece.player === BLACK_PLAYER) {
-                counterB++
-            }
-            else if (piece.getPossibleMoves(boardData).length === 0 && piece.player === WHITE_PLAYER) {
-                counterW++
-            }
-        }
-        if (counterB === this.amountOfPiecePlayer(BLACK_PLAYER)) {
-            this.winner = WHITE_PLAYER;
-            getNotifyWinner();
-        }
-        else if (counterW === this.amountOfPiecePlayer(WHITE_PLAYER)) {
-            this.winner = BLACK_PLAYER;
-            getNotifyWinner();
-        }
-
-    }
-    //Get 'man' piece and make it to 'king'.
-    getKing(row, col, player) {
-        addImg(table.rows[row].cells[col], player, KING);
-        removeImg(table.rows[this.lastPiece.row].cells[this.lastPiece.col]);
-        this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, KING, player);
     }
 }
 

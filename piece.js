@@ -16,35 +16,31 @@ class Piece {
         else if (this.type === KING) {
             moves = this.getKingMoves(boardData);
         }
-
-
         return moves;
     }
     //Get regular moves for 'man'.
     getManMoves(boardData) {
         let result = [];
-
         //Black direction (down).
         if (this.player === BLACK_PLAYER) {
-            //right empty
+            //right empty.
             if (boardData.isEmpty(this.row + 1, this.col + 1)) {
                 result.push([this.row + 1, this.col + 1]);
-            }   //left empty
+            }   //left empty.
             if (boardData.isEmpty(this.row + 1, this.col - 1)) {
                 result.push([this.row + 1, this.col - 1]);
-            }   //capture move right
+            }   //capture move right.
             if (boardData.isEnemy(this.row + 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col + 2)) {
                 result = [];
                 result.push([this.row + 1, this.col + 1]);
                 result.push([this.row + 2, this.col + 2]);
-                //both sides
+                //both sides.
                 if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
                     result.push([this.row + 1, this.col - 1]);
                     result.push([this.row + 2, this.col - 2]);
                 }
                 this.canCapture = true;
-
-            }   //capture move left
+            }   //capture move left.
             else if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
                 result = [];
                 result.push([this.row + 1, this.col - 1]);
@@ -52,21 +48,20 @@ class Piece {
                 this.canCapture = true;
             }
         }
-
         //White direction (up).
         else {
-            //right empty
+            //right empty.
             if (boardData.isEmpty(this.row - 1, this.col + 1)) {
                 result.push([this.row - 1, this.col + 1]);
-            }    //left empty
+            }    //left empty.
             if (boardData.isEmpty(this.row - 1, this.col - 1)) {
                 result.push([this.row - 1, this.col - 1]);
-            }     //capture move right
+            }     //capture move right.
             if (boardData.isEnemy(this.row - 1, this.col + 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col + 2)) {
                 result = [];
                 result.push([this.row - 1, this.col + 1]);
                 result.push([this.row - 2, this.col + 2]);
-                //both sides
+                //both sides.
                 if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
                     result.push([this.row - 1, this.col - 1]);
                     result.push([this.row - 2, this.col - 2]);
@@ -74,8 +69,7 @@ class Piece {
                 if (this.canCapture === false) {
                     this.canCapture = true;
                 }
-
-            }   //capture move left
+            }   //capture move left.
             else if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
                 result = [];
                 result.push([this.row - 1, this.col - 1]);
@@ -100,7 +94,6 @@ class Piece {
         result = result.concat(this.getMovesInDirection(1, -1, boardData));
         result = result.concat(this.getMovesInDirection(-1, 1, boardData));
         result = result.concat(this.getMovesInDirection(-1, -1, boardData));
-
         return result;
     }
     //Get all moves by dierctions.

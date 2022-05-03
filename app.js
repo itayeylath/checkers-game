@@ -2,8 +2,8 @@
 const BOARD_SIZE = 8;
 const WHITE_PLAYER = 'white';
 const BLACK_PLAYER = 'black';
-const MAN = 'man'
-const KING = 'king'
+const MAN = 'man';
+const KING = 'king';
 
 //no-Constant variables.
 let boardData;
@@ -12,10 +12,10 @@ let mustMakeJump = false;
 
 //Notify the winner when the game end.
 function getNotifyWinner() {
-    const WIneerPop = document.createElement("div");
-    WIneerPop.textContent = "the winner is " + boardData.winner;
-    WIneerPop.className = 'winner';
-    table.appendChild(WIneerPop);
+    const notify = document.createElement("div");
+    notify.textContent = "the winner is " + boardData.winner;
+    notify.className = 'winner';
+    table.appendChild(notify);
 }
 //Clear board from all Decoration.
 function ClearBoard() {
@@ -35,13 +35,13 @@ function printPossibleMoves(possibleMoves, row, col) {
         const cellRow = possibleMove[0];
         const cellCol = possibleMove[1];
         let cell = undefined;
-        if (cellRow !== undefined && cellCol !== undefined ) {
-            if(cellRow < 8 && cellRow > -1 && cellCol < 8 && cellCol > -1){
+        if (cellRow !== undefined && cellCol !== undefined) {
+            if (cellRow < 8 && cellRow > -1 && cellCol < 8 && cellCol > -1) {
 
                 cell = table.rows[cellRow].cells[cellCol];
             }
         }
-       
+
         if (cell !== undefined) {
             if (boardData.isEnemy(row, col, cellRow, cellCol)) {
                 cell.classList.add('enemy');
@@ -54,7 +54,6 @@ function printPossibleMoves(possibleMoves, row, col) {
 }
 //Decoration selected and possible moves, move piece and capture enemy- all by click.
 function onCellClick(row, col) {
-    
     const selectedPiece = boardData.getPiece(row, col);
     const seleceteCell = table.rows[row].cells[col];
     //Check if this is the first move for making regular move or capture move.
@@ -68,18 +67,18 @@ function onCellClick(row, col) {
         }
         boardData.getPotentialMovment();
         ClearBoard();
-        
+
         boardData.getPotentialMovment();
     }
     //Show the possible moves for selceted piece and Take into account player turns and capture move.
     if (selectedPiece !== undefined && boardData.winner === undefined && boardData.getTurnMoves(selectedPiece)) {
         const possibleMoves = selectedPiece.getPossibleMoves(boardData);
         if (mustMakeJump === true) {
-            if(selectedPiece.canCapture){
+            if (selectedPiece.canCapture) {
                 printPossibleMoves(possibleMoves, row, col)
             }
         }
-        else   {
+        else {
             printPossibleMoves(possibleMoves, row, col)
         }
         //Show selected cell.
@@ -89,9 +88,9 @@ function onCellClick(row, col) {
     }
 }
 //Add image to cell.
-function addImg(cell, player, name) {
+function addImg(cell, player, type) {
     const img = document.createElement("img")
-    img.src = 'images/' + player + '/' + name + '.png';
+    img.src = 'images/' + player + '/' + type + '.png';
     img.draggable = false;
     cell.appendChild(img);
 }
@@ -119,7 +118,7 @@ function creatCheckersBoard() {
             if ((row + col) % 2 === 0) {
                 cell.className = 'light-cell';
             } else {
-                cell.className = 'red-cell';
+                cell.className = 'dark-cell';
                 //Creat piece.
                 initialPieces(row, col, cell, counterPieces);
                 counterPieces++;
@@ -138,5 +137,3 @@ function getInitialgame() {
 }
 //By loaded the page the initial game will start.
 window.addEventListener('load', getInitialgame);
-
-
