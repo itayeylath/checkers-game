@@ -115,7 +115,10 @@ class BoardData {
     //Show the potinatial players who can move foe the current player.
     getPotentialMovment() {
         for (let piece of this.pieces) {
-            if (piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player && piece.canMove === true) {
+            if (mustMakeJump === true && piece.canCapture === true && this.currentPlayer === piece.player) {
+                table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
+            }
+            else if (mustMakeJump === false && piece.getPossibleMoves(boardData).length !== 0 && this.currentPlayer === piece.player) {
                 table.rows[piece.row].cells[piece.col].classList.add('Potential-Movment');
             }
         }
@@ -123,18 +126,18 @@ class BoardData {
     // Get game back to rgular, any jump available.
     capturHappen() {
         mustMakeJump = false;
-        const currentPieces = boardData.pieces;
-        for (let piece of currentPieces) {
-            piece.canMove = true;
+        for (let piece of boardData.pieces) {
+            if (piece.canCapture) {
+                piece.canCapture = false;
+            }
         }
     }
     // get game to only capture available.
     getOnlyJumpAvaialble(player) {
         mustMakeJump = true;
-        const currentPieces = boardData.pieces;
-        for (let piece of currentPieces) {
-            if (piece.player === player && piece.canCapture === false) {
-                piece.canMove = false;
+        for (let piece of boardData.pieces) {
+            if (piece.player === player && piece.canCapture === true) {
+
             }
         }
     }
@@ -152,12 +155,11 @@ class BoardData {
     isNoMovement() {
         let counterB = 0;
         let counterW = 0;
-        const currentPieces = boardData.pieces;
-        for (let piece of currentPieces) {
+        for (let piece of boardData.pieces) {
             if (piece.getPossibleMoves(boardData).length === 0 && piece.player === BLACK_PLAYER) {
                 counterB++
             }
-            if (piece.getPossibleMoves(boardData).length === 0 && piece.player === WHITE_PLAYER) {
+            else if (piece.getPossibleMoves(boardData).length === 0 && piece.player === WHITE_PLAYER) {
                 counterW++
             }
         }
@@ -169,5 +171,17 @@ class BoardData {
             this.winner = BLACK_PLAYER;
             getNotifyWinner();
         }
+
+    }
+
+    getTrueCapture() {
+        for (let piece of boardData.pieces) {
+            if (piece.canCapture) {
+                console.log(piece);
+            }
+        }
     }
 }
+
+
+// boardData.printPossibleMoves(possibleMoves, row, col)

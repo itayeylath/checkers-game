@@ -1,9 +1,9 @@
-//Constant variables
+//Constant variables.
 const BOARD_SIZE = 8;
 const WHITE_PLAYER = 'white';
 const BLACK_PLAYER = 'black';
 
-//no-Constant variables
+//no-Constant variables.
 let boardData;
 let pieces = [];
 let mustMakeJump = false;
@@ -27,8 +27,28 @@ function ClearBoard() {
 function removeImg(cell) {
     cell.getElementsByTagName("img")[0].remove();
 }
+//decoration possible moves for selceted piece.
+function printPossibleMoves(possibleMoves, row, col) {
+    for (let possibleMove of possibleMoves) {
+        const cellRow = possibleMove[0];
+        const cellCol = possibleMove[1];
+        let cell = undefined;
+        if (cellRow !== undefined && cellCol !== undefined) {
+            cell = table.rows[cellRow].cells[cellCol];
+        }
+        if (cell !== undefined) {
+            if (boardData.isEnemy(row, col, cellRow, cellCol)) {
+                cell.classList.add('enemy');
+            }
+            else if (boardData.getPiece(cellRow, cellCol) === undefined) {
+                cell.classList.add('possible-move');
+            }
+        }
+    }
+}
 //Decoration selected and possible moves, move piece and capture enemy- all by click.
 function onCellClick(row, col) {
+    
     const selectedPiece = boardData.getPiece(row, col);
     const seleceteCell = table.rows[row].cells[col];
     //Check if this is the first move for making regular move or capture move.
@@ -40,16 +60,20 @@ function onCellClick(row, col) {
                 boardData.getCaptureMove(row, col);
             }
         }
+        boardData.getPotentialMovment();
         ClearBoard();
+        
         boardData.getPotentialMovment();
     }
     //Show the possible moves for selceted piece and Take into account player turns and capture move.
     if (selectedPiece !== undefined && boardData.winner === undefined && boardData.getTurnMoves(selectedPiece)) {
         const possibleMoves = selectedPiece.getPossibleMoves(boardData);
-        if (mustMakeJump === false) {
-            boardData.getOnlyJumpAvaialble();
+        if (mustMakeJump === true) {
+            if(selectedPiece.canCapture){
+                printPossibleMoves(possibleMoves, row, col)
+            }
         }
-        else if (selectedPiece.canMove === true) {
+        else   {
             printPossibleMoves(possibleMoves, row, col)
         }
         //Show selected cell.
@@ -109,27 +133,6 @@ function getInitialgame() {
 //By loaded the page the initial game will start.
 window.addEventListener('load', getInitialgame);
 
-//TODO: write what the func do and put it in the right place
-function printPossibleMoves(possibleMoves, row, col) {
-
-
-    for (let possibleMove of possibleMoves) {
-        const cellRow = possibleMove[0];
-        const cellCol = possibleMove[1];
-        let cell = undefined;
-        if (cellRow !== undefined && cellCol !== undefined) {
-            cell = table.rows[cellRow].cells[cellCol];
-        }
-        if (cell !== undefined) {
-            if (boardData.isEnemy(row, col, cellRow, cellCol)) {
-                cell.classList.add('enemy');
-            }
-            else if (boardData.getPiece(cellRow, cellCol) === undefined) {
-                cell.classList.add('possible-move');
-            }
-        }
-    }
-}
 
 
 

@@ -5,7 +5,6 @@ class Piece {
         this.col = col;
         this.type = type;
         this.player = player;
-        this.canMove = true;
         this.canCapture = false;
     }
     // Get moves for the specific piece in posintion.
@@ -42,16 +41,16 @@ class Piece {
                     result.push([this.row + 2, this.col - 2]);
                 }
                 this.canCapture = true;
-                boardData.getOnlyJumpAvaialble(this.player)
+
             }   //capture move left
             else if (boardData.isEnemy(this.row + 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row + 2, this.col - 2)) {
                 result = [];
                 result.push([this.row + 1, this.col - 1]);
                 result.push([this.row + 2, this.col - 2]);
                 this.canCapture = true;
-                boardData.getOnlyJumpAvaialble(this.player)
-            } return result;
+            }
         }
+
         //White direction (up).
         else {
             //right empty
@@ -70,17 +69,27 @@ class Piece {
                     result.push([this.row - 1, this.col - 1]);
                     result.push([this.row - 2, this.col - 2]);
                 }
-                this.canCapture = true;
-                boardData.getOnlyJumpAvaialble(this.player)
+                if (this.canCapture === false) {
+                    this.canCapture = true;
+                }
+
             }   //capture move left
             else if (boardData.isEnemy(this.row - 1, this.col - 1, this.row, this.col) && boardData.isEmpty(this.row - 2, this.col - 2)) {
                 result = [];
                 result.push([this.row - 1, this.col - 1]);
                 result.push([this.row - 2, this.col - 2]);
-                this.canCapture = true;
-                boardData.getOnlyJumpAvaialble(this.player)
-            } return result;
+                    this.canCapture = true;
+            }
         }
+        if (this.canCapture && boardData.currentPlayer === this.player) {
+            mustMakeJump = true;
+        }
+        else if (this.canCapture && boardData.currentPlayer !== this.player){
+            this.canCapture = false;
+            mustMakeJump = false;
+        }
+       
+        return result;
     }
     // TO DO: queen moves.
     getQueenMoves(boardData) {
