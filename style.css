@@ -1,47 +1,58 @@
-h1 {
+h1,
+h2 {
     text-align: center;
     font-family: 'Franklin Gothic Medium';
 }
+
 table {
     border-style: solid;
     border-color: #000000;
     margin: auto;
     position: relative;
 }
+
 tr td {
     height: 60px;
     width: 60px;
 }
+
 .light-cell {
     background: rgb(142, 81, 81);
     width: 45px;
     height: 45px;
     user-select: none;
 }
-.dark-cell {
+
+.red-cell {
     background: rgb(106, 106, 106);
     width: 45px;
     height: 45px;
     user-select: none;
 }
+
 img {
     height: 30px;
     width: 30px;
     margin: 5px;
 }
+
 /* 5 classes for decoration the potential movement */
-.selected-cell{
+.selected-cell {
     background: blueviolet;
 }
+
 .possible-move {
     background: green;
 }
+
 .enemy {
     background: red;
 }
-.Potential-Movment{
+
+.Potential-Movment {
     opacity: 0.8;
 }
+
 .winner {
     position: absolute;
     left: 50%;

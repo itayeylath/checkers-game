@@ -48,9 +48,17 @@ class BoardData {
     }
     //Get piece move, add image and update BoardData pieces array.
     getMove(row, col) {
-        addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
-        removeImg(this.lastCell);
-        this.updatePiecesArray(boardData.pieces, boardData.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+        if (this.lastPiece.player === BLACK_PLAYER && row === 7) {
+            this.getKing(row, col, this.lastPiece.player);
+        }
+        else if(this.lastPiece.player === WHITE_PLAYER && row === 0){
+            this.getKing(row, col, this.lastPiece.player);
+        }
+        else {
+            addImg(table.rows[row].cells[col], this.lastPiece.player, this.lastPiece.type);
+            removeImg(this.lastCell);
+            this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, this.lastPiece.type, this.lastPiece.player);
+        }
         this.isNoMovement();
     }
     //Get capture piece remove, remove image and update BoardData pieces array.
@@ -132,15 +140,6 @@ class BoardData {
             }
         }
     }
-    // get game to only capture available.
-    getOnlyJumpAvaialble(player) {
-        mustMakeJump = true;
-        for (let piece of boardData.pieces) {
-            if (piece.player === player && piece.canCapture === true) {
-
-            }
-        }
-    }
     //Get length of pieces from the same player.
     amountOfPiecePlayer(player) {
         let counter = 0;
@@ -173,15 +172,12 @@ class BoardData {
         }
 
     }
-
-    getTrueCapture() {
-        for (let piece of boardData.pieces) {
-            if (piece.canCapture) {
-                console.log(piece);
-            }
-        }
+    //Get 'man' piece and make it to 'king'.
+    getKing(row, col, player) {
+        addImg(table.rows[row].cells[col], player, KING);
+        removeImg(table.rows[this.lastPiece.row].cells[this.lastPiece.col]);
+        this.updatePiecesArray(this.pieces, this.getindex(this.lastPiece.row, this.lastPiece.col), row, col, KING, player);
     }
 }
 
 
-// boardData.printPossibleMoves(possibleMoves, row, col)

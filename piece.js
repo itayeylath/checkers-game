@@ -7,18 +7,20 @@ class Piece {
         this.player = player;
         this.canCapture = false;
     }
-    // Get moves for the specific piece in posintion.
+    //Get moves for the specific piece in posintion.
     getPossibleMoves(boardData) {
         let moves = [];
         if (this.type === MAN) {
             moves = this.getManMoves(boardData);
         }
         else if (this.type === KING) {
-            moves = this.getQueenMoves(boardData);
+            moves = this.getKingMoves(boardData);
         }
+
+
         return moves;
     }
-    //Get regular piece moves.
+    //Get regular moves for 'man'.
     getManMoves(boardData) {
         let result = [];
 
@@ -78,23 +80,30 @@ class Piece {
                 result = [];
                 result.push([this.row - 1, this.col - 1]);
                 result.push([this.row - 2, this.col - 2]);
-                    this.canCapture = true;
+                this.canCapture = true;
             }
         }
         if (this.canCapture && boardData.currentPlayer === this.player) {
             mustMakeJump = true;
         }
-        else if (this.canCapture && boardData.currentPlayer !== this.player){
+        else if (this.canCapture && boardData.currentPlayer !== this.player) {
             this.canCapture = false;
             mustMakeJump = false;
         }
-       
+
         return result;
     }
-    // TO DO: queen moves.
-    getQueenMoves(boardData) {
+    //Get special moves for 'king'.
+    getKingMoves(boardData) {
+        let result = [];
+        result = result.concat(this.getMovesInDirection(1, 1, boardData));
+        result = result.concat(this.getMovesInDirection(1, -1, boardData));
+        result = result.concat(this.getMovesInDirection(-1, 1, boardData));
+        result = result.concat(this.getMovesInDirection(-1, -1, boardData));
+
+        return result;
     }
-    //// TO DO: make it for queen moves.
+    //Get all moves by dierctions.
     getMovesInDirection(directionRow, directionCol, boardData) {
         let result = [];
         for (let i = 1; i < BOARD_SIZE; i++) {
@@ -102,10 +111,16 @@ class Piece {
             let col = this.col + directionCol * i;
             if (boardData.getPiece(row, col) === undefined) {
                 result.push([row, col]);
-            } else {
+            }
+            else {
                 result.push([row, col]);
+                if (boardData.isEnemy(row, col, this.row, this.col)) {
+                    result.push([this.row + directionRow * (i + 1), this.col + directionCol * (i + 1)]);
+                }
                 return result;
             }
-        } return result;
+        }
+
+        return result;
     }
 }

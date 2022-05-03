@@ -35,9 +35,13 @@ function printPossibleMoves(possibleMoves, row, col) {
         const cellRow = possibleMove[0];
         const cellCol = possibleMove[1];
         let cell = undefined;
-        if (cellRow !== undefined && cellCol !== undefined) {
-            cell = table.rows[cellRow].cells[cellCol];
+        if (cellRow !== undefined && cellCol !== undefined ) {
+            if(cellRow < 8 && cellRow > -1 && cellCol < 8 && cellCol > -1){
+
+                cell = table.rows[cellRow].cells[cellCol];
+            }
         }
+       
         if (cell !== undefined) {
             if (boardData.isEnemy(row, col, cellRow, cellCol)) {
                 cell.classList.add('enemy');
@@ -115,7 +119,7 @@ function creatCheckersBoard() {
             if ((row + col) % 2 === 0) {
                 cell.className = 'light-cell';
             } else {
-                cell.className = 'dark-cell';
+                cell.className = 'red-cell';
                 //Creat piece.
                 initialPieces(row, col, cell, counterPieces);
                 counterPieces++;
@@ -136,25 +140,3 @@ function getInitialgame() {
 window.addEventListener('load', getInitialgame);
 
 
-
-
-
-
-
-
-
-
-
-
-//TODO: ERASE? or take it later for make note for play wrong
-// let bool = true;
-// for (let i = 0; i < BOARD_SIZE; i++) {
-//     for (let j = 0; j < BOARD_SIZE; j++) {
-//         if (table.rows[i].cells[j].classList[1] === 'possible-move') {
-//             bool = false;
-//         }
-//     }
-// }
-// if (bool === true) {
-//     console.log("NO PLACE TO MOVE!")
-// }
