@@ -1,7 +1,5 @@
 ## About 
 
-### [➡️ Open the app ⬅️](https://checkers-game-vanillaa.netlify.app/)
-
 After a month in the bootcamp we were given an independent task - to create a checkers game.
 After three intensive days, I finished the project and submitted it.
 
@@ -30,5 +28,6 @@ jumps in one turn.
 <b> I was accepted to the bootcamp based on the project and a personal interview and started a new path.</b>
 
 
+### [➡️ Open the app ⬅️](https://checkers-game-vanillaa.netlify.app/)
 <img src="images/checkers-game-pic.png" width="300" hight="300">
 
