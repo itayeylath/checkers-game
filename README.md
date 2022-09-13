@@ -1,4 +1,7 @@
 ## About 
+
+### [➡️ Open the app ⬅️](https://checkers-game-vanillaa.netlify.app/)
+
 After a month in the bootcamp we were given an independent task - to create a checkers game.
 After three intensive days, I finished the project and submitted it.
 
